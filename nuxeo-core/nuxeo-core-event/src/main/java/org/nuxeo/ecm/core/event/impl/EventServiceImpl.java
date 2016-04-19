@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.ecm.core.event.bus.local.LocalEventBundlePipe;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -99,14 +100,19 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     protected boolean bulkModeEnabled = false;
 
+    protected LocalEventBundlePipe pipe;
+
     public EventServiceImpl() {
         listenerDescriptors = new EventListenerList();
         postCommitExec = new PostCommitEventExecutor();
         asyncExec = new AsyncEventExecutor();
+        // XXX make Pluggable
+        pipe = new LocalEventBundlePipe();
     }
 
     public void init() {
         asyncExec.init();
+        pipe.initPipe("default", null);
     }
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
@@ -307,11 +313,13 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             return;
         }
 
+
         // fire async listeners
         if (AsyncProcessorConfig.forceJMSUsage() && !comesFromJMS) {
             log.debug("Skipping async exec, this will be triggered via JMS");
         } else {
-            asyncExec.run(postCommitAsync, event);
+            pipe.sendEventBundle(event);
+            //asyncExec.run(postCommitAsync, event);
         }
     }
 

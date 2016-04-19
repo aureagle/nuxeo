@@ -14,24 +14,19 @@
  * Contributors:
  *     tiry
  */
-package org.nuxeo.ecm.core.event.bus.local;
+package org.nuxeo.ecm.core.event.bus;
 
 import java.util.List;
-
-import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.bus.AbstractListenerPipeConsumer;
+import java.util.Map;
 
 /**
  *
  * @since TODO
  */
-public class LocalEventBundlePipeConsumer extends AbstractListenerPipeConsumer<EventBundle> {
+public interface PipeConsumer<T> {
 
-    @Override
-    protected List<EventBundle> unmarshallEventBundle(List<EventBundle> messages) {
-       // xxx reconnect them all using the same session ?
-       // we may not want to reconnect at this stage and let the workers do it
-       return messages;
-    }
+    void initConsumer(String name, Map<String, String> params);
+
+    void receiveMessage(List<T> messages);
 
 }

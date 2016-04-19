@@ -24,15 +24,16 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.bus.AbstractEventBundlePipe;
 import org.nuxeo.ecm.core.event.bus.EventBundlePipe;
+import org.nuxeo.ecm.core.event.bus.PipeConsumer;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
 
 /**
- *
+ * Local In memory implementation: directly relays to WorkManager
  * @since TODO
  */
 public class LocalEventBundlePipe extends AbstractEventBundlePipe<EventBundle> implements EventBundlePipe {
 
-    protected LocalEventBundlePipeConsumer consumer;
+    protected PipeConsumer<EventBundle> consumer;
 
     @Override
     public void initPipe(String name, Map<String, String> params) {
